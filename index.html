@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ead1ca">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="やらないメモ">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>やらないメモ</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7ece8;
+      --bg-soft: #fbf4f1;
+      --card: #fffafa;
+      --card-pink: #fff4f1;
+      --text: #4a3934;
+      --muted: #806b64;
+      --line: #ead8d2;
+      --accent: #d89a8d;
+      --accent-strong: #c98073;
+      --accent-soft: #f1d7d0;
+      --danger: #9b5a51;
+      --shadow: 0 10px 28px rgba(126, 86, 76, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.72), transparent 34rem),
+        linear-gradient(180deg, var(--bg) 0%, #f9efec 48%, #f5e6e1 100%);
+      line-height: 1.7;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .app {
+      width: min(100%, 680px);
+      margin: 0 auto;
+      padding: max(20px, env(safe-area-inset-top)) 16px max(28px, env(safe-area-inset-bottom));
+    }
+
+    .app-header {
+      padding: 12px 4px 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 9vw, 3rem);
+      line-height: 1.18;
+      letter-spacing: 0;
+      color: #553d37;
+    }
+
+    .lead {
+      margin: 0 auto;
+      max-width: 38rem;
+      color: var(--muted);
+      font-size: 0.98rem;
+      text-align: center;
+      white-space: pre-line;
+    }
+
+    .card {
+      margin: 0 0 16px;
+      padding: 18px;
+      background: linear-gradient(180deg, var(--card) 0%, var(--card-pink) 100%);
+      border: 1px solid rgba(234, 216, 210, 0.9);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 1.18rem;
+      line-height: 1.35;
+      letter-spacing: 0;
+      color: #5b433d;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-weight: 700;
+      color: #5d463f;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 104px;
+      resize: vertical;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.86);
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(216, 154, 141, 0.18);
+    }
+
+    textarea::placeholder {
+      color: #a58e87;
+    }
+
+    .primary-button,
+    .soft-button,
+    .delete-button,
+    .file-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+    }
+
+    .primary-button {
+      width: 100%;
+      color: #fff;
+      background: linear-gradient(180deg, #d99a8e, var(--accent-strong));
+      box-shadow: 0 8px 18px rgba(191, 117, 104, 0.22);
+    }
+
+    .soft-button,
+    .file-button {
+      width: 100%;
+      color: #664d46;
+      background: var(--accent-soft);
+      border: 1px solid rgba(212, 173, 164, 0.65);
+    }
+
+    .delete-button {
+      min-height: 38px;
+      padding: 0 14px;
+      color: var(--danger);
+      background: #f7e4df;
+      border: 1px solid #ecd0c8;
+    }
+
+    .primary-button:active,
+    .soft-button:active,
+    .delete-button:active,
+    .file-button:active {
+      transform: translateY(1px);
+    }
+
+    .status {
+      min-height: 1.5em;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+      text-align: center;
+    }
+
+    .records {
+      display: grid;
+      gap: 12px;
+    }
+
+    .empty {
+      margin: 0;
+      padding: 16px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px dashed #e3c9c1;
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    .record-card {
+      display: grid;
+      gap: 12px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .record-main {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #4f3933;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .record-note {
+      margin: 0;
+      color: #6c5650;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .record-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .backup-text {
+      margin: 0 0 14px;
+      color: var(--muted);
+      white-space: pre-line;
+    }
+
+    .backup-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 420px) {
+      .app {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .card {
+        padding: 16px;
+        border-radius: 16px;
+      }
+
+      .backup-actions {
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <h1>やらないメモ</h1>
+      <p class="lead">苦しいときほど、あとで後悔する行動をしてしまうことがあります。
+落ち着いている時に、自分のための「やらないこと」を書いておき、つらい時に見返すためのメモです。</p>
+    </header>
+
+    <section class="card" aria-labelledby="entry-title">
+      <h2 id="entry-title">やらないこと</h2>
+      <form id="memoForm">
+        <div class="field">
+          <label for="dontInput">やらないこと</label>
+          <textarea id="dontInput" name="dont" placeholder="例：深夜に長文を送らない" required></textarea>
+        </div>
+        <div class="field">
+          <label for="reasonInput">理由・思い出すこと</label>
+          <textarea id="reasonInput" name="reason" placeholder="例：朝になってから見直す"></textarea>
+        </div>
+        <button class="primary-button" type="submit">保存する</button>
+        <p class="status" id="formStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="records-title">
+      <h2 id="records-title">記録</h2>
+      <div class="records" id="recordsList"></div>
+    </section>
+
+    <section class="card" aria-labelledby="backup-title">
+      <h2 id="backup-title">バックアップ</h2>
+      <p class="backup-text">記録を保存したり復元できます。
+大切な記録がなくならないように、
+定期的に保存をお願いします。</p>
+      <div class="backup-actions">
+        <button class="soft-button" type="button" id="exportButton">保存</button>
+        <label class="file-button" for="importInput">復元</label>
+        <input class="file-input" id="importInput" type="file" accept="application/json,.json">
+      </div>
+      <p class="status" id="backupStatus" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "koharuYaranaiMemoRecords";
+    const BACKUP_VERSION = 1;
+
+    const form = document.getElementById("memoForm");
+    const dontInput = document.getElementById("dontInput");
+    const reasonInput = document.getElementById("reasonInput");
+    const recordsList = document.getElementById("recordsList");
+    const formStatus = document.getElementById("formStatus");
+    const backupStatus = document.getElementById("backupStatus");
+    const exportButton = document.getElementById("exportButton");
+    const importInput = document.getElementById("importInput");
+
+    let records = loadRecords();
+
+    function loadRecords() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed
+          .map(normalizeRecord)
+          .filter(Boolean)
+          .sort((a, b) => b.createdAt - a.createdAt);
+      } catch {
+        return [];
+      }
+    }
+
+    function normalizeRecord(item) {
+      if (!item || typeof item !== "object") return null;
+      const text = String(item.text || item.dont || "").trim();
+      if (!text) return null;
+      const createdAt = Number(item.createdAt) || Date.now();
+      return {
+        id: String(item.id || `${createdAt}-${Math.random().toString(36).slice(2)}`),
+        text,
+        reason: String(item.reason || "").trim(),
+        createdAt
+      };
+    }
+
+    function saveRecords() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    }
+
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      return new Intl.DateTimeFormat("ja-JP", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).format(date);
+    }
+
+    function setMessage(element, message) {
+      element.textContent = message;
+      if (!message) return;
+      window.setTimeout(() => {
+        if (element.textContent === message) element.textContent = "";
+      }, 3200);
+    }
+
+    function renderRecords() {
+      recordsList.replaceChildren();
+
+      if (records.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "empty";
+        empty.textContent = "まだ記録はありません。";
+        recordsList.append(empty);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      records.forEach((record) => {
+        const article = document.createElement("article");
+        article.className = "record-card";
+
+        const main = document.createElement("p");
+        main.className = "record-main";
+        main.textContent = record.text;
+
+        const note = document.createElement("p");
+        note.className = "record-note";
+        note.textContent = record.reason || "理由・思い出すことは未入力です。";
+
+        const meta = document.createElement("div");
+        meta.className = "record-meta";
+
+        const date = document.createElement("span");
+        date.textContent = `登録日：${formatDate(record.createdAt)}`;
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "delete-button";
+        deleteButton.type = "button";
+        deleteButton.textContent = "削除";
+        deleteButton.addEventListener("click", () => {
+          records = records.filter((item) => item.id !== record.id);
+          saveRecords();
+          renderRecords();
+          setMessage(formStatus, "記録を削除しました。");
+        });
+
+        meta.append(date, deleteButton);
+        article.append(main, note, meta);
+        fragment.append(article);
+      });
+
+      recordsList.append(fragment);
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const text = dontInput.value.trim();
+      const reason = reasonInput.value.trim();
+      if (!text) {
+        dontInput.focus();
+        return;
+      }
+
+      const createdAt = Date.now();
+      records = [{
+        id: `${createdAt}-${Math.random().toString(36).slice(2)}`,
+        text,
+        reason,
+        createdAt
+      }, ...records];
+      saveRecords();
+      renderRecords();
+      form.reset();
+      dontInput.focus();
+      setMessage(formStatus, "保存しました。");
+    });
+
+    exportButton.addEventListener("click", () => {
+      const payload = {
+        app: "やらないメモ",
+        version: BACKUP_VERSION,
+        exportedAt: new Date().toISOString(),
+        storageKey: STORAGE_KEY,
+        records
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const date = new Date();
+      const stamp = [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+      ].join("");
+      link.href = url;
+      link.download = `yaranai-memo-backup-${stamp}.json`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setMessage(backupStatus, "保存用ファイルを書き出しました。");
+    });
+
+    importInput.addEventListener("change", async () => {
+      const file = importInput.files && importInput.files[0];
+      importInput.value = "";
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        const importedRecords = Array.isArray(parsed) ? parsed : parsed.records;
+        if (!Array.isArray(importedRecords)) {
+          throw new Error("invalid backup");
+        }
+
+        const merged = [...records];
+        const ids = new Set(merged.map((record) => record.id));
+        importedRecords.map(normalizeRecord).filter(Boolean).forEach((record) => {
+          if (!ids.has(record.id)) {
+            merged.push(record);
+            ids.add(record.id);
+          }
+        });
+        records = merged.sort((a, b) => b.createdAt - a.createdAt);
+        saveRecords();
+        renderRecords();
+        setMessage(backupStatus, "記録を復元しました。");
+      } catch {
+        setMessage(backupStatus, "読み込めませんでした。ファイルを確認してください。");
+      }
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", async () => {
+        try {
+          const registration = await navigator.serviceWorker.register("sw.js");
+          registration.update();
+        } catch {
+          // PWA登録に失敗しても、メモ機能はそのまま使えるようにします。
+        }
+      });
+
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+    }
+
+    renderRecords();
+  </script>
+</body>
+</html>
