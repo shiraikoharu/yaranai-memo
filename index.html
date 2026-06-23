@@ -111,6 +111,14 @@
       margin-bottom: 14px;
     }
 
+    .entry-card .field {
+      margin-bottom: 12px;
+    }
+
+    .entry-card textarea {
+      min-height: 96px;
+    }
+
     label {
       font-weight: 700;
       color: #5d463f;
@@ -224,13 +232,6 @@
       overflow-wrap: anywhere;
     }
 
-    .record-note {
-      margin: 0;
-      color: #6c5650;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
     .record-meta {
       display: flex;
       align-items: center;
@@ -282,29 +283,25 @@
   <main class="app">
     <header class="app-header">
       <h1>やらないメモ</h1>
-      <p class="lead">苦しいときほど、あとで後悔する行動をしてしまうことがあります。
-落ち着いている時に、自分のための「やらないこと」を書いておき、つらい時に見返すためのメモです。</p>
+      <p class="lead">苦しい時に、
+後悔する行動をしてしまわないように、
+
+落ち着いている時に、
+自分のための「やらないこと」を書いておき、
+
+つらい時に見返すためのメモです。</p>
     </header>
 
-    <section class="card" aria-labelledby="entry-title">
+    <section class="card entry-card" aria-labelledby="entry-title">
       <h2 id="entry-title">やらないこと</h2>
       <form id="memoForm">
         <div class="field">
           <label for="dontInput">やらないこと</label>
           <textarea id="dontInput" name="dont" placeholder="例：深夜に長文を送らない" required></textarea>
         </div>
-        <div class="field">
-          <label for="reasonInput">理由・思い出すこと</label>
-          <textarea id="reasonInput" name="reason" placeholder="例：朝になってから見直す"></textarea>
-        </div>
         <button class="primary-button" type="submit">保存する</button>
         <p class="status" id="formStatus" role="status" aria-live="polite"></p>
       </form>
-    </section>
-
-    <section class="card" aria-labelledby="records-title">
-      <h2 id="records-title">記録</h2>
-      <div class="records" id="recordsList"></div>
     </section>
 
     <section class="card" aria-labelledby="backup-title">
@@ -319,6 +316,11 @@
       </div>
       <p class="status" id="backupStatus" role="status" aria-live="polite"></p>
     </section>
+
+    <section class="card" aria-labelledby="records-title">
+      <h2 id="records-title">記録</h2>
+      <div class="records" id="recordsList"></div>
+    </section>
   </main>
 
   <script>
@@ -327,7 +329,6 @@
 
     const form = document.getElementById("memoForm");
     const dontInput = document.getElementById("dontInput");
-    const reasonInput = document.getElementById("reasonInput");
     const recordsList = document.getElementById("recordsList");
     const formStatus = document.getElementById("formStatus");
     const backupStatus = document.getElementById("backupStatus");
@@ -359,7 +360,6 @@
       return {
         id: String(item.id || `${createdAt}-${Math.random().toString(36).slice(2)}`),
         text,
-        reason: String(item.reason || "").trim(),
         createdAt
       };
     }
@@ -405,10 +405,6 @@
         main.className = "record-main";
         main.textContent = record.text;
 
-        const note = document.createElement("p");
-        note.className = "record-note";
-        note.textContent = record.reason || "理由・思い出すことは未入力です。";
-
         const meta = document.createElement("div");
         meta.className = "record-meta";
 
@@ -427,7 +423,7 @@
         });
 
         meta.append(date, deleteButton);
-        article.append(main, note, meta);
+        article.append(main, meta);
         fragment.append(article);
       });
 
@@ -437,7 +433,6 @@
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const text = dontInput.value.trim();
-      const reason = reasonInput.value.trim();
       if (!text) {
         dontInput.focus();
         return;
@@ -447,7 +442,6 @@
       records = [{
         id: `${createdAt}-${Math.random().toString(36).slice(2)}`,
         text,
-        reason,
         createdAt
       }, ...records];
       saveRecords();

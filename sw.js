@@ -1,4 +1,4 @@
-const CACHE_NAME = "yaranai-memo-cache-v1";
+const CACHE_NAME = "yaranai-memo-cache-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
