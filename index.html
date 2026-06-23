@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="やらないメモ">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>やらないメモ</title>
-  <link rel="manifest" href="manifest.json?v=3">
+  <link rel="manifest" href="manifest.json?v=4">
   <link rel="apple-touch-icon" href="icon-512.png">
   <style>
     :root {
@@ -305,7 +305,7 @@
 
     <section class="card" aria-labelledby="backup-title">
       <h2 id="backup-title">バックアップ</h2>
-      <p class="backup-text">記録を保存したり復元したりできます。
+      <p class="backup-text">記録を保存・復元できます。
 大切な記録がなくならないように、
 定期的に保存をお願いします。</p>
       <div class="backup-actions">
@@ -509,7 +509,7 @@
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", async () => {
         try {
-          const registration = await navigator.serviceWorker.register("sw.js?v=3");
+          const registration = await navigator.serviceWorker.register("sw.js?v=4");
           registration.update();
         } catch {
           // PWA登録に失敗しても、メモ機能はそのまま使えるようにします。
