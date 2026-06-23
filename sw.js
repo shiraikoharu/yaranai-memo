@@ -1,8 +1,8 @@
-const CACHE_NAME = "yaranai-memo-cache-v2";
+const CACHE_NAME = "yaranai-memo-cache-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./manifest.json",
+  "./manifest.json?v=3",
   "./icon-512.png"
 ];
 
@@ -32,7 +32,7 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate" || request.destination === "document") {
     event.respondWith(
-      fetch(request)
+      fetch(request, { cache: "no-store" })
         .then((response) => {
           const copy = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy));
